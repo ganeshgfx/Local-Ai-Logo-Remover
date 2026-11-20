@@ -5,7 +5,7 @@ Set oEnv = oShell.Environment("Process")
 oEnv.Remove("ELECTRON_RUN_AS_NODE")
 
 Dim appDir
-appDir = "c:\Users\ganes\Desktop\Temp\Gemini-Logo-remove\gemini-remover"
+appDir = "c:\Users\ganes\Desktop\Temp\Gemini-Logo-remove"
 
 Dim electronExe
 electronExe = appDir & "\node_modules\electron\dist\electron.exe"

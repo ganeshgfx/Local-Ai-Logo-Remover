@@ -23,6 +23,7 @@ win:
       arch:
         - x64
   requestedExecutionLevel: asInvoker
+  icon: resources/icon.ico
 
 nsis:
   oneClick: false

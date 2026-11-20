@@ -8,7 +8,9 @@ $videoTargets = @(
     "SystemFileAssociations\.mp4",
     "SystemFileAssociations\.mov",
     "SystemFileAssociations\.webm",
-    "SystemFileAssociations\.m4v"
+    "SystemFileAssociations\.m4v",
+    "SystemFileAssociations\.mkv",
+    "SystemFileAssociations\.avi"
 )
 
 foreach ($target in $videoTargets) {
@@ -19,4 +21,4 @@ foreach ($target in $videoTargets) {
     }
 }
 
-Write-Host "Windows 10 context menu unregistered successfully."
+Write-Host "Context menu unregistered successfully."

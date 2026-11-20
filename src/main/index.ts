@@ -89,12 +89,16 @@ function parseFileArgs(args: string[]): string[] {
 
 function createWindow(): BrowserWindow {
   log('createWindow called');
+  const iconPath = app.isPackaged
+    ? path.join(process.resourcesPath, '../resources/icon.ico')
+    : path.join(__dirname, '../../resources/icon.ico');
   const win = new BrowserWindow({
     width: 920,
     height: 700,
     minWidth: 720,
     minHeight: 540,
     title: 'Gemini Watermark Remover',
+    icon: iconPath,
     webPreferences: {
       preload: path.join(__dirname, 'preload.js'),
       contextIsolation: false,

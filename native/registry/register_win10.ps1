@@ -7,9 +7,9 @@ $ErrorActionPreference = "Stop"
 
 if (-not $AppPath) {
     $candidates = @(
+        (Join-Path $env:LOCALAPPDATA "Programs\Gemini Watermark Remover\Gemini Watermark Remover.exe"),
+        (Join-Path $PSScriptRoot "..\..\release\win-unpacked\Gemini Watermark Remover.exe"),
         (Join-Path $PSScriptRoot "..\..\dist\win-unpacked\Gemini Watermark Remover.exe"),
-        (Join-Path $PSScriptRoot "..\..\..\release\Gemini Watermark Remover.exe"),
-        (Join-Path $env:LOCALAPPDATA "Programs\gemini-remover\Gemini Watermark Remover.exe"),
         (Join-Path $env:ProgramFiles "Gemini Watermark Remover\Gemini Watermark Remover.exe")
     )
     foreach ($c in $candidates) {
@@ -21,22 +21,24 @@ if (-not $AppPath) {
 }
 
 if (-not $AppPath) {
-    $AppPath = [System.IO.Path]::GetFullPath((Join-Path $PSScriptRoot "..\..\dist\win-unpacked\Gemini Watermark Remover.exe"))
+    $AppPath = [System.IO.Path]::GetFullPath((Join-Path $PSScriptRoot "..\..\release\win-unpacked\Gemini Watermark Remover.exe"))
 }
 
-Write-Host "Registering Windows 10 context menu for: $AppPath"
+Write-Host "Registering context menu for: $AppPath"
 
 $menuText = "Remove Gemini"
 $iconVal = "`"$AppPath`",0"
 # MultiSelectModel=Player: Explorer calls once per file; single-instance lock batches them
-$commandVal = "cmd /c `"set ELECTRON_RUN_AS_NODE=0 && `"$AppPath`" `"%1`"`""
+$commandVal = "`"$AppPath`" `"%1`""
 
 $videoTargets = @(
     "SystemFileAssociations\video",
     "SystemFileAssociations\.mp4",
     "SystemFileAssociations\.mov",
     "SystemFileAssociations\.webm",
-    "SystemFileAssociations\.m4v"
+    "SystemFileAssociations\.m4v",
+    "SystemFileAssociations\.mkv",
+    "SystemFileAssociations\.avi"
 )
 
 foreach ($target in $videoTargets) {
@@ -58,4 +60,4 @@ foreach ($target in $videoTargets) {
     Set-ItemProperty -Path $cmdKey -Name "(Default)" -Value $commandVal
 }
 
-Write-Host "Windows 10 context menu registered successfully."
+Write-Host "Context menu registered successfully."
