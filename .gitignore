@@ -1,0 +1,8 @@
+node_modules/
+dist/
+dist-electron/
+release/
+upstream-ref/
+temp/
+*.log
+.DS_Store

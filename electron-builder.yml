@@ -1,0 +1,34 @@
+appId: io.geminiwatermarkremover.app
+productName: Gemini Watermark Remover
+copyright: Copyright (c) 2024
+
+directories:
+  output: release
+  buildResources: resources
+
+files:
+  - dist/**/*
+  - dist-electron/**/*
+  - node_modules/**/*
+
+extraResources:
+  - from: resources/models
+    to: models
+  - from: resources/onnxruntime
+    to: onnxruntime
+
+win:
+  target:
+    - target: nsis
+      arch:
+        - x64
+  requestedExecutionLevel: asInvoker
+
+nsis:
+  oneClick: false
+  allowElevation: false
+  allowToChangeInstallationDirectory: true
+  perMachine: false
+  createDesktopShortcut: false
+  createStartMenuShortcut: true
+  runAfterFinish: false
