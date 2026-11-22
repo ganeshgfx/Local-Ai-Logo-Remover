@@ -35,7 +35,7 @@ IFACEMETHODIMP_(ULONG) GeminiRemoverCommand::Release() {
 }
 
 IFACEMETHODIMP GeminiRemoverCommand::GetTitle(IShellItemArray*, LPWSTR* ppszName) {
-    return SHStrDupW(L"Remove Gemini", ppszName);
+    return SHStrDupW(L"Remove AI Watermark", ppszName);
 }
 
 IFACEMETHODIMP GeminiRemoverCommand::GetIcon(IShellItemArray*, LPWSTR* ppszIcon) {
@@ -44,7 +44,7 @@ IFACEMETHODIMP GeminiRemoverCommand::GetIcon(IShellItemArray*, LPWSTR* ppszIcon)
 }
 
 IFACEMETHODIMP GeminiRemoverCommand::GetToolTip(IShellItemArray*, LPWSTR* ppszInfotip) {
-    return SHStrDupW(L"Remove Gemini watermark from selected video(s)", ppszInfotip);
+    return SHStrDupW(L"Remove AI watermark from selected video(s)", ppszInfotip);
 }
 
 IFACEMETHODIMP GeminiRemoverCommand::GetCanonicalName(GUID* pguidCommandName) {
@@ -134,7 +134,7 @@ std::wstring GeminiRemoverCommand::GetAppExecutablePath() {
     std::wstring dir(dllPath);
     auto pos = dir.find_last_of(L"\\/");
     if (pos != std::wstring::npos) dir = dir.substr(0, pos);
-    return dir + L"\\Gemini Watermark Remover.exe";
+    return dir + L"\\AI Watermark Remover.exe";
 }
 
 std::vector<std::wstring> GeminiRemoverCommand::CollectFilePaths(IShellItemArray* psia) {
@@ -161,7 +161,7 @@ std::wstring GeminiRemoverCommand::BuildJobManifestPath(const std::vector<std::w
     GetTempPathW(MAX_PATH, tempDir);
     
     auto now = std::chrono::steady_clock::now().time_since_epoch().count();
-    std::wstring manifestPath = std::wstring(tempDir) + L"gemini-remover-" + std::to_wstring(now) + L".json";
+    std::wstring manifestPath = std::wstring(tempDir) + L"ai-remover-" + std::to_wstring(now) + L".json";
     
     std::wostringstream json;
     json << L"{\n  \"files\": [\n";

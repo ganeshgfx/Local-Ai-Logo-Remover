@@ -1,17 +1,17 @@
-# Gemini Watermark Remover — Windows File Explorer Integration
+# AI Watermark Remover — Windows File Explorer Integration
 
-A high-performance Windows desktop application that integrates directly into the Windows File Explorer right-click context menu (Windows 10 & Windows 11 modern context menu) to detect and remove Gemini/Veo watermarks from videos locally and offline.
+A high-performance Windows desktop application that integrates directly into the Windows File Explorer right-click context menu (Windows 10 & Windows 11 modern context menu) to detect and remove AI-generated watermarks from videos locally and offline.
 
 ---
 
 ## Architecture & Overview
 
 - **Desktop Shell**: Electron + Vite + React + TypeScript. Single-instance application handling multi-file batches and manifest inputs.
-- **Engine Core**: Native integration with upstream `@pilio/gemini-watermark-remover` video modules (`mediabunny`, `WebCodecs`, canvas pixel solvers).
+- **Engine Core**: Native integration with upstream video modules (`mediabunny`, `WebCodecs`, canvas pixel solvers).
 - **GPU Inference & AI Restoration**:
   - `onnxruntime-web` execution provider with WebGPU support (`ort-wasm-simd-threaded.jsep.wasm`) and multi-threaded WASM SIMD fallback.
   - Bundled AllenK FDnCNN models:
-    - `model_core_fp32_86x74.onnx` (Veo text watermarks)
+    - `model_core_fp32_86x74.onnx` (Text watermarks)
     - `model_core_fp32_104.onnx` (Watermarks ≤ 56px)
     - `model_core_fp32_200.onnx` (Default / large watermarks)
   - WebGPU compute shader pipeline (`webgpuPixelOps.ts`) for hardware-accelerated reverse alpha-blending pixel operations.
@@ -24,9 +24,9 @@ A high-performance Windows desktop application that integrates directly into the
 ## Directory Structure
 
 ```
-gemini-remover/
+ai-watermark-remover/
 ├── native/                         # Windows C++ Shell Extension & Manifests
-│   ├── CMakeLists.txt              # CMake configuration for GeminiRemoverShellExt.dll
+│   ├── CMakeLists.txt              # CMake configuration for shell extension DLL
 │   ├── dllmain.cpp                 # DLL entry point & COM ClassFactory
 │   ├── GeminiRemoverCommand.h      # IExplorerCommand declaration
 │   ├── GeminiRemoverCommand.cpp    # Multi-file collection & app invocation
@@ -60,6 +60,7 @@ gemini-remover/
 │   │   ├── ipcChannels.ts          # IPC constants
 │   │   └── types.ts                # TypeScript data definitions
 │   └── vendor/                     # Vendored upstream core & video modules
+├── choco/                          # Chocolatey package files
 ├── tests/
 │   └── engine/
 │       └── pipeline.test.ts        # Vitest test suite
@@ -75,7 +76,7 @@ gemini-remover/
 
 ### 1. Install Dependencies
 ```bash
-cd gemini-remover
+cd ai-watermark-remover
 npm install
 ```
 
@@ -116,3 +117,16 @@ To remove the menu entry:
 ```powershell
 powershell -ExecutionPolicy Bypass -File native\registry\unregister_win10.ps1
 ```
+
+---
+
+## AI Code Disclaimer
+
+> [!NOTE]
+> Parts of this codebase, documentation, and configuration were developed with the assistance of Artificial Intelligence (AI) coding tools. While all components have been tested and verified, the software is provided "as is", without warranty of any kind. Users should evaluate and test it according to their own requirements and security standards.
+
+---
+
+## License
+
+This project is licensed under the MIT License - see the [LICENSE](LICENSE) file for details.

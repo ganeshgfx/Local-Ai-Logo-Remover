@@ -1,7 +1,8 @@
 {
-  "name": "gemini-watermark-remover",
+  "name": "ai-watermark-remover",
   "version": "1.0.1",
-  "description": "Remove Gemini/Veo watermarks from videos - Windows desktop app",
+  "description": "Remove AI-generated watermarks from videos - Windows desktop app",
+  "license": "MIT",
   "main": "dist-electron/index.js",
   "scripts": {
     "dev": "vite",

@@ -7,10 +7,10 @@ $ErrorActionPreference = "Stop"
 
 if (-not $AppPath) {
     $candidates = @(
-        (Join-Path $env:LOCALAPPDATA "Programs\Gemini Watermark Remover\Gemini Watermark Remover.exe"),
-        (Join-Path $PSScriptRoot "..\..\release\win-unpacked\Gemini Watermark Remover.exe"),
-        (Join-Path $PSScriptRoot "..\..\dist\win-unpacked\Gemini Watermark Remover.exe"),
-        (Join-Path $env:ProgramFiles "Gemini Watermark Remover\Gemini Watermark Remover.exe")
+        (Join-Path $env:LOCALAPPDATA "Programs\AI Watermark Remover\AI Watermark Remover.exe"),
+        (Join-Path $PSScriptRoot "..\..\release\win-unpacked\AI Watermark Remover.exe"),
+        (Join-Path $PSScriptRoot "..\..\dist\win-unpacked\AI Watermark Remover.exe"),
+        (Join-Path $env:ProgramFiles "AI Watermark Remover\AI Watermark Remover.exe")
     )
     foreach ($c in $candidates) {
         if (Test-Path $c) {
@@ -21,12 +21,12 @@ if (-not $AppPath) {
 }
 
 if (-not $AppPath) {
-    $AppPath = [System.IO.Path]::GetFullPath((Join-Path $PSScriptRoot "..\..\release\win-unpacked\Gemini Watermark Remover.exe"))
+    $AppPath = [System.IO.Path]::GetFullPath((Join-Path $PSScriptRoot "..\..\release\win-unpacked\AI Watermark Remover.exe"))
 }
 
 Write-Host "Registering context menu for: $AppPath"
 
-$menuText = "Remove Gemini"
+$menuText = "Remove AI Watermark"
 $iconVal = "`"$AppPath`",0"
 # MultiSelectModel=Player: Explorer calls once per file; single-instance lock batches them
 $commandVal = "`"$AppPath`" `"%1`""
@@ -42,7 +42,7 @@ $videoTargets = @(
 )
 
 foreach ($target in $videoTargets) {
-    $shellKey = "HKCU:\Software\Classes\$target\shell\GeminiRemover"
+    $shellKey = "HKCU:\Software\Classes\$target\shell\AIWatermarkRemover"
     $cmdKey = "$shellKey\command"
 
     if (-not (Test-Path $shellKey)) {

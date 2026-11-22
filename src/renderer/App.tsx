@@ -400,7 +400,7 @@ export default function App() {
           <div>
             <div className="flex items-center gap-2">
               <span className="font-semibold text-sm tracking-tight text-zinc-100">
-                Gemini Remover
+                AI Remover
               </span>
               <Badge variant="outline" className="text-[11px] px-2 py-0 text-zinc-400 border-zinc-800">
                 Local AI
@@ -535,7 +535,7 @@ export default function App() {
               Select or drop video files here
             </h3>
             <p className="text-xs text-zinc-400 max-w-md mb-6 leading-relaxed">
-              Right-click any video in Windows Explorer &rarr; <span className="text-zinc-200 font-medium">Remove Gemini</span>, or click here to select files.
+              Right-click any video in Windows Explorer &rarr; <span className="text-zinc-200 font-medium">Remove AI Watermark</span>, or click here to select files.
             </p>
             <Button variant="secondary" size="lg" className="gap-2 text-xs font-semibold pointer-events-none">
               <Plus className="w-4 h-4" />

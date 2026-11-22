@@ -14,7 +14,7 @@ $videoTargets = @(
 )
 
 foreach ($target in $videoTargets) {
-    $shellKey = "HKCU:\Software\Classes\$target\shell\GeminiRemover"
+    $shellKey = "HKCU:\Software\Classes\$target\shell\AIWatermarkRemover"
     if (Test-Path $shellKey) {
         Remove-Item -Path $shellKey -Recurse -Force
         Write-Host "Removed $shellKey"

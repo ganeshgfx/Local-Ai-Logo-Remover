@@ -1,0 +1,40 @@
+<?xml version="1.0" encoding="utf-8"?>
+<package xmlns="http://schemas.microsoft.com/packaging/2015/06/nuspec.xsd">
+  <metadata>
+    <id>ai-watermark-remover</id>
+    <version>1.0.1</version>
+    <title>AI Watermark Remover</title>
+    <authors>ganeshgfx</authors>
+    <owners>ganeshgfx</owners>
+    <projectUrl>https://github.com/ganeshgfx/Local-Ai-Logo-Remover</projectUrl>
+    <bugTrackerUrl>https://github.com/ganeshgfx/Local-Ai-Logo-Remover/issues</bugTrackerUrl>
+    <projectSourceUrl>https://github.com/ganeshgfx/Local-Ai-Logo-Remover</projectSourceUrl>
+    <packageSourceUrl>https://github.com/ganeshgfx/Local-Ai-Logo-Remover/tree/main/choco</packageSourceUrl>
+    <licenseUrl>https://github.com/ganeshgfx/Local-Ai-Logo-Remover/blob/main/LICENSE</licenseUrl>
+    <requireLicenseAcceptance>false</requireLicenseAcceptance>
+    <tags>ai watermark remover video image onnx gpu electron desktop</tags>
+    <summary>Remove AI-generated watermarks from videos locally and offline using GPU-accelerated inference.</summary>
+    <description>
+## AI Watermark Remover
+
+A high-performance Windows desktop application that integrates directly into the Windows File Explorer right-click context menu to detect and remove AI-generated watermarks from videos locally and offline.
+
+### Features
+
+- **GPU-Accelerated**: WebGPU compute shaders + ONNX Runtime with WASM SIMD fallback
+- **Bundled AI Models**: AllenK FDnCNN models for different watermark sizes
+- **Windows Shell Integration**: Right-click context menu for Windows 10 &amp; 11
+- **Fully Offline**: No internet required after installation
+- **Batch Processing**: Process multiple files at once
+
+### Notes
+
+- Windows only (x64)
+- GPU with WebGPU support recommended for best performance
+- Falls back to multi-threaded WASM SIMD on systems without WebGPU
+    </description>
+  </metadata>
+  <files>
+    <file src="tools\**" target="tools" />
+  </files>
+</package>

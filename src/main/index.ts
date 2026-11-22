@@ -97,7 +97,7 @@ function createWindow(): BrowserWindow {
     height: 700,
     minWidth: 720,
     minHeight: 540,
-    title: 'Gemini Watermark Remover',
+    title: 'AI Watermark Remover',
     icon: iconPath,
     webPreferences: {
       preload: path.join(__dirname, 'preload.js'),

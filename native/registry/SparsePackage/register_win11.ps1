@@ -4,7 +4,7 @@ param(
     [switch]$Unregister
 )
 
-$packageName = "GeminiWatermarkRemover.ShellExtension"
+$packageName = "AIWatermarkRemover.ShellExtension"
 $manifestPath = Join-Path $PSScriptRoot "AppxManifest.xml"
 
 if ($Unregister) {
@@ -23,8 +23,8 @@ if (-not $ExternalLocation) {
     $candidates = @(
         (Join-Path $PSScriptRoot "..\..\..\dist\win-unpacked"),
         (Join-Path $PSScriptRoot "..\..\.."),
-        (Join-Path $env:LOCALAPPDATA "Programs\gemini-remover"),
-        (Join-Path $env:ProgramFiles "Gemini Watermark Remover")
+        (Join-Path $env:LOCALAPPDATA "Programs\ai-watermark-remover"),
+        (Join-Path $env:ProgramFiles "AI Watermark Remover")
     )
     foreach ($cand in $candidates) {
         if (Test-Path $cand) {
