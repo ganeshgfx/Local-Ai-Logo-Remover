@@ -1,11 +1,12 @@
 Set oShell = CreateObject("WScript.Shell")
+Set oFSO = CreateObject("Scripting.FileSystemObject")
 Set oEnv = oShell.Environment("Process")
 
 ' Clear ELECTRON_RUN_AS_NODE so Electron runs in GUI mode
 oEnv.Remove("ELECTRON_RUN_AS_NODE")
 
 Dim appDir
-appDir = "c:\Users\ganes\Desktop\Temp\Gemini-Logo-remove"
+appDir = oFSO.GetParentFolderName(WScript.ScriptFullName)
 
 Dim electronExe
 electronExe = appDir & "\node_modules\electron\dist\electron.exe"

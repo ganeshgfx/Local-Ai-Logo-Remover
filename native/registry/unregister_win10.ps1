@@ -19,6 +19,11 @@ foreach ($target in $videoTargets) {
         Remove-Item -Path $shellKey -Recurse -Force
         Write-Host "Removed $shellKey"
     }
+    $legacyKey = "HKCU:\Software\Classes\$target\shell\GeminiRemover"
+    if (Test-Path $legacyKey) {
+        Remove-Item -Path $legacyKey -Recurse -Force
+        Write-Host "Removed $legacyKey"
+    }
 }
 
 Write-Host "Context menu unregistered successfully."

@@ -35,7 +35,7 @@ IFACEMETHODIMP_(ULONG) GeminiRemoverCommand::Release() {
 }
 
 IFACEMETHODIMP GeminiRemoverCommand::GetTitle(IShellItemArray*, LPWSTR* ppszName) {
-    return SHStrDupW(L"Remove AI Watermark", ppszName);
+    return SHStrDupW(L"Remove Watermark", ppszName);
 }
 
 IFACEMETHODIMP GeminiRemoverCommand::GetIcon(IShellItemArray*, LPWSTR* ppszIcon) {
@@ -44,7 +44,7 @@ IFACEMETHODIMP GeminiRemoverCommand::GetIcon(IShellItemArray*, LPWSTR* ppszIcon)
 }
 
 IFACEMETHODIMP GeminiRemoverCommand::GetToolTip(IShellItemArray*, LPWSTR* ppszInfotip) {
-    return SHStrDupW(L"Remove AI watermark from selected video(s)", ppszInfotip);
+    return SHStrDupW(L"Remove watermark from selected video(s)", ppszInfotip);
 }
 
 IFACEMETHODIMP GeminiRemoverCommand::GetCanonicalName(GUID* pguidCommandName) {

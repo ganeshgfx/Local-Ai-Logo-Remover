@@ -1,6 +1,6 @@
-import { ipcRenderer } from 'electron';
+import { contextBridge, ipcRenderer } from 'electron';
 
-(window as any).electronAPI = {
+const electronAPI = {
   getInitialFiles: () => ipcRenderer.invoke('get-initial-files'),
   selectFiles: () => ipcRenderer.invoke('select-files'),
   showInFolder: (path: string) => ipcRenderer.invoke('show-in-folder', path),
@@ -17,3 +17,11 @@ import { ipcRenderer } from 'electron';
   cancelJob: (jobId: string) => ipcRenderer.send('job:cancel', jobId),
   cancelAll: () => ipcRenderer.send('batch:cancel-all'),
 };
+
+(window as any).electronAPI = electronAPI;
+try {
+  if (contextBridge && contextBridge.exposeInMainWorld) {
+    contextBridge.exposeInMainWorld('electronAPI', electronAPI);
+  }
+} catch {}
+

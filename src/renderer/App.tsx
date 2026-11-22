@@ -5,6 +5,7 @@ import { Button } from './components/ui/button';
 import { Card } from './components/ui/card';
 import { Badge } from './components/ui/badge';
 import { Progress } from './components/ui/progress';
+import { AboutModal } from './components/AboutModal';
 import {
   Sparkles,
   Film,
@@ -22,6 +23,7 @@ import {
   List,
   ChevronDown,
   ChevronUp,
+  Info,
 } from 'lucide-react';
 
 const STAGE_LABELS: Record<string, string> = {
@@ -277,6 +279,7 @@ export default function App() {
   const [isDragging, setIsDragging] = useState(false);
   const [viewMode, setViewMode] = useState<'cards' | 'compact'>('cards');
   const [statsCollapsed, setStatsCollapsed] = useState(false);
+  const [isAboutOpen, setIsAboutOpen] = useState(false);
   const initialFilesLoadedRef = useRef(false);
 
   useEffect(() => {
@@ -447,6 +450,17 @@ export default function App() {
             <span>GPU: {batch.gpuMode}</span>
           </div>
 
+          {/* About & Attributions Button */}
+          <Button
+            variant="ghost"
+            size="icon"
+            onClick={() => setIsAboutOpen(true)}
+            className="h-8 w-8 text-zinc-400 hover:text-white hover:bg-zinc-800 rounded-lg"
+            title="About & Attributions"
+          >
+            <Info className="w-4 h-4" />
+          </Button>
+
           {/* Add Videos Button */}
           <Button
             variant="default"
@@ -535,7 +549,7 @@ export default function App() {
               Select or drop video files here
             </h3>
             <p className="text-xs text-zinc-400 max-w-md mb-6 leading-relaxed">
-              Right-click any video in Windows Explorer &rarr; <span className="text-zinc-200 font-medium">Remove AI Watermark</span>, or click here to select files.
+              Right-click any video in Windows Explorer &rarr; <span className="text-zinc-200 font-medium">Remove Watermark</span>, or click here to select files.
             </p>
             <Button variant="secondary" size="lg" className="gap-2 text-xs font-semibold pointer-events-none">
               <Plus className="w-4 h-4" />
@@ -605,6 +619,9 @@ export default function App() {
           </div>
         </footer>
       )}
+
+      {/* About & Attributions Modal */}
+      <AboutModal isOpen={isAboutOpen} onClose={() => setIsAboutOpen(false)} />
     </div>
   );
 }

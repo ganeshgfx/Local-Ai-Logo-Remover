@@ -109,6 +109,22 @@ function createWindow(): BrowserWindow {
     show: false,
   });
 
+  win.webContents.setWindowOpenHandler(({ url }) => {
+    if (url.startsWith('https:') || url.startsWith('http:')) {
+      shell.openExternal(url);
+    }
+    return { action: 'deny' };
+  });
+
+  win.webContents.on('will-navigate', (event, url) => {
+    if (url !== win.webContents.getURL()) {
+      event.preventDefault();
+      if (url.startsWith('https:') || url.startsWith('http:')) {
+        shell.openExternal(url);
+      }
+    }
+  });
+
   win.webContents.on('console-message', (_e, level, message, line, sourceId) => {
     log(`RENDERER CONSOLE [${level}] ${message} (${sourceId}:${line})`);
   });

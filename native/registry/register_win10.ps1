@@ -26,7 +26,7 @@ if (-not $AppPath) {
 
 Write-Host "Registering context menu for: $AppPath"
 
-$menuText = "Remove AI Watermark"
+$menuText = "Remove Watermark"
 $iconVal = "`"$AppPath`",0"
 # MultiSelectModel=Player: Explorer calls once per file; single-instance lock batches them
 $commandVal = "`"$AppPath`" `"%1`""
@@ -42,6 +42,12 @@ $videoTargets = @(
 )
 
 foreach ($target in $videoTargets) {
+    # Clean up legacy GeminiRemover key if present
+    $legacyKey = "HKCU:\Software\Classes\$target\shell\GeminiRemover"
+    if (Test-Path $legacyKey) {
+        Remove-Item -Path $legacyKey -Recurse -Force -ErrorAction SilentlyContinue
+    }
+
     $shellKey = "HKCU:\Software\Classes\$target\shell\AIWatermarkRemover"
     $cmdKey = "$shellKey\command"
 

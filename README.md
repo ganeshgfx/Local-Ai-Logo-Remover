@@ -120,6 +120,46 @@ powershell -ExecutionPolicy Bypass -File native\registry\unregister_win10.ps1
 
 ---
 
+## Attributions & Acknowledgements
+
+This application is built upon and inspired by outstanding open-source projects, academic research, and runtimes:
+
+### Core Algorithm & Watermark Removal Engine
+- **[allenk / GeminiWatermarkTool](https://github.com/allenk/GeminiWatermarkTool)** by **Allen Kuo (`allenk`)**
+  - Original mathematical formulation for reverse alpha-blending pixel reconstruction (inverting Google's alpha composite equation rather than relying on blurry generative inpainting).
+  - Pre-calculated embedded alpha maps, contour repair, adaptive detection heuristics, and candidate arbitration pipeline.
+- **[allenk / VeoWatermarkRemover](https://github.com/allenk/VeoWatermarkRemover)** by **Allen Kuo (`allenk`)**
+  - Video watermark detection templates, track state handling, and Veo text watermark heuristics.
+
+### Deep Learning Architecture & Models
+- **FDnCNN (Fast and Flexible Denoising Convolutional Neural Network)**
+  - Architecture and research by Kai Zhang, Wangmeng Zuo, Yunjin Chen, Deyu Meng, and Lei Zhang (*"Beyond a Gaussian Denoiser: Residual Learning of Deep CNN for Image Denoising"*, IEEE TIP 2017).
+  - Bundled ONNX models (`model_core_fp32_104.onnx`, `model_core_fp32_200.onnx`, `model_core_fp32_86x74.onnx`) derived from Allen Kuo's trained model weights for offline inference.
+
+### Core Processing Libraries & Runtime
+- **[ONNX Runtime Web](https://github.com/microsoft/onnxruntime)** (Microsoft — MIT License):
+  - Hardware-accelerated neural network execution via WebGPU with multi-threaded WebAssembly SIMD fallback (`ort-wasm-simd-threaded.jsep.wasm`).
+- **[mediabunny](https://github.com/remotion-dev/mediabunny)** (Remotion — MIT License):
+  - High-performance client-side video demuxing, decoding, and encoding wrapper for WebCodecs.
+- **W3C Standards (Chromium Engine)**:
+  - **WebCodecs API**: Hardware video frame decoding and encoding.
+  - **WebGPU (WGSL)**: Custom compute shaders for accelerated parallel reverse alpha-blending pixel operations.
+
+### Desktop Shell & UI Framework
+- **[Electron](https://github.com/electron/electron)** (OpenJS Foundation — MIT License)
+- **[React](https://react.dev/) & [React DOM](https://github.com/facebook/react)** (Meta Platforms, Inc. — MIT License)
+- **[Vite](https://vite.dev/)** & **[vite-plugin-electron](https://github.com/electron-vite/vite-plugin-electron)** (MIT License)
+- **[Tailwind CSS](https://tailwindcss.com/)** (Tailwind Labs — MIT License)
+- **[Lucide React](https://lucide.dev/)** (Lucide Contributors — ISC License)
+- **[clsx](https://github.com/lukeed/clsx)**, **[tailwind-merge](https://github.com/dcastil/tailwind-merge)**, **[class-variance-authority](https://cva.style/)**
+
+### Windows Shell & Native OS Integration
+- **Microsoft Windows SDK**: C++ COM implementation (`IExplorerCommand`, `IObjectWithSite`, `IShellItemArray`) for File Explorer context menu integration.
+- **Windows 11 MSIX Sparse Packages**: Identity registration for modern Windows 11 context menus.
+- **Packaging & Distribution**: [Chocolatey Package](choco/ai-watermark-remover.nuspec) & NSIS installer via `electron-builder`.
+
+---
+
 ## AI Code Disclaimer
 
 > [!NOTE]
