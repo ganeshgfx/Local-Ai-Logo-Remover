@@ -1,13 +1,20 @@
 # AI Watermark Remover — Windows File Explorer Integration
 
-A high-performance Windows desktop application that integrates directly into the Windows File Explorer right-click context menu (Windows 10 & Windows 11 modern context menu) to detect and remove AI-generated watermarks from videos locally and offline.
+A high-performance Windows desktop application that integrates directly into the Windows File Explorer right-click context menu (Windows 10 & Windows 11 modern context menu) to detect and remove AI-generated watermarks from videos and images locally and offline.
+
+---
+
+## Supported Formats
+
+- **Video**: `.mp4`, `.mov`, `.webm`, `.m4v`, `.mkv`, `.avi`
+- **Image**: `.png`, `.jpg`, `.jpeg`, `.webp`, `.bmp`
 
 ---
 
 ## Architecture & Overview
 
 - **Desktop Shell**: Electron + Vite + React + TypeScript. Single-instance application handling multi-file batches and manifest inputs.
-- **Engine Core**: Native integration with upstream video modules (`mediabunny`, `WebCodecs`, canvas pixel solvers).
+- **Engine Core**: Native integration with upstream video and image modules (`mediabunny`, `WebCodecs`, canvas pixel solvers).
 - **GPU Inference & AI Restoration**:
   - `onnxruntime-web` execution provider with WebGPU support (`ort-wasm-simd-threaded.jsep.wasm`) and multi-threaded WASM SIMD fallback.
   - Bundled AllenK FDnCNN models:
@@ -80,9 +87,11 @@ ai-watermark-remover/
 - **Offline**: Fully self-contained; no internet required after install.
 
 ### Method 1: Windows Installer (Recommended)
-1. Download the latest installer (`AI.Watermark.Remover.Setup.x.x.x.exe`) from [GitHub Releases](https://github.com/ganeshgfx/Local-Ai-Logo-Remover/releases).
+1. Download the latest release from [GitHub Releases](https://github.com/ganeshgfx/Local-Ai-Logo-Remover/releases):
+   - Direct download: [AI.Watermark.Remover.Setup.1.0.1.exe](https://github.com/ganeshgfx/Local-Ai-Logo-Remover/releases/download/v1.0.1/AI.Watermark.Remover.Setup.1.0.1.exe)
+   - SHA-256: `B4A0D3F494315F62CB9897F37C3E28E806B7B2F0FD0943229082D6503B6178D2`
 2. Run the executable to install the application.
-3. Launch from the Start menu or use the right-click context menu integration.
+3. Launch from Start menu or right-click any supported video or image file in Windows Explorer.
 
 ### Method 2: Chocolatey
 Install via Chocolatey package manager:
