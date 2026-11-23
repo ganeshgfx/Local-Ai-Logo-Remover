@@ -11,6 +11,8 @@ export type ProcessingStage =
 
 export type GPUMode = 'preferred' | 'strict' | 'cpu-only';
 
+export type MediaType = 'video' | 'image';
+
 export interface JobRecord {
   id: string;
   filePath: string;
@@ -25,6 +27,7 @@ export interface JobRecord {
   startedAt?: number;
   completedAt?: number;
   gpuBackend?: string;
+  mediaType?: MediaType;
 }
 
 export interface BatchState {

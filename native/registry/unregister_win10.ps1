@@ -3,17 +3,23 @@ param()
 
 $ErrorActionPreference = "Continue"
 
-$videoTargets = @(
+$mediaTargets = @(
     "SystemFileAssociations\video",
+    "SystemFileAssociations\image",
     "SystemFileAssociations\.mp4",
     "SystemFileAssociations\.mov",
     "SystemFileAssociations\.webm",
     "SystemFileAssociations\.m4v",
     "SystemFileAssociations\.mkv",
-    "SystemFileAssociations\.avi"
+    "SystemFileAssociations\.avi",
+    "SystemFileAssociations\.png",
+    "SystemFileAssociations\.jpg",
+    "SystemFileAssociations\.jpeg",
+    "SystemFileAssociations\.webp",
+    "SystemFileAssociations\.bmp"
 )
 
-foreach ($target in $videoTargets) {
+foreach ($target in $mediaTargets) {
     $shellKey = "HKCU:\Software\Classes\$target\shell\AIWatermarkRemover"
     if (Test-Path $shellKey) {
         Remove-Item -Path $shellKey -Recurse -Force

@@ -2,6 +2,13 @@ import { describe, it, expect, beforeEach } from 'vitest';
 import { batchOrchestrator } from '../../src/engine/batchOrchestrator';
 import { detectCapabilities, selectOrtProvider } from '../../src/engine/gpuPolicy';
 import { getModelPath } from '../../src/engine/modelLoader';
+import {
+  isImageFile,
+  isVideoFile,
+  isSupportedMediaFile,
+  getImageMimeInfo,
+  buildImageOutputPath,
+} from '../../src/engine/processingPipeline';
 
 describe('GPU Policy and Model Loader', () => {
   it('selects wasm in cpu-only mode', () => {
@@ -98,5 +105,53 @@ describe('Batch Orchestrator State Management', () => {
 
     batchOrchestrator.cancelAll();
     unsubscribe();
+  });
+
+  it('correctly queues image files and tags mediaType', () => {
+    let latestState = batchOrchestrator.getState();
+    const unsubscribe = batchOrchestrator.subscribe((s) => {
+      latestState = s;
+    });
+
+    batchOrchestrator.addFiles(['photo.png', 'render.jpg', 'clip.mp4']);
+    const photoJob = latestState.jobs.find(j => j.filePath === 'photo.png');
+    const renderJob = latestState.jobs.find(j => j.filePath === 'render.jpg');
+    const clipJob = latestState.jobs.find(j => j.filePath === 'clip.mp4');
+
+    expect(photoJob?.mediaType).toBe('image');
+    expect(renderJob?.mediaType).toBe('image');
+    expect(clipJob?.mediaType).toBe('video');
+
+    batchOrchestrator.cancelAll();
+    unsubscribe();
+  });
+});
+
+describe('Media File Classification and Image Utilities', () => {
+  it('detects video and image extensions accurately', () => {
+    expect(isImageFile('C:/path/to/watermark.png')).toBe(true);
+    expect(isImageFile('photo.JPG')).toBe(true);
+    expect(isImageFile('pic.webp')).toBe(true);
+    expect(isImageFile('video.mp4')).toBe(false);
+
+    expect(isVideoFile('video.mp4')).toBe(true);
+    expect(isVideoFile('movie.mov')).toBe(true);
+    expect(isVideoFile('pic.png')).toBe(false);
+
+    expect(isSupportedMediaFile('photo.jpg')).toBe(true);
+    expect(isSupportedMediaFile('video.mkv')).toBe(true);
+    expect(isSupportedMediaFile('notes.txt')).toBe(false);
+  });
+
+  it('determines proper MIME type and output extension for images', () => {
+    expect(getImageMimeInfo('test.png')).toEqual({ mimeType: 'image/png', outputExt: '.png' });
+    expect(getImageMimeInfo('test.JPG')).toEqual({ mimeType: 'image/jpeg', outputExt: '.jpg' });
+    expect(getImageMimeInfo('test.webp')).toEqual({ mimeType: 'image/webp', outputExt: '.webp' });
+    expect(getImageMimeInfo('test.bmp')).toEqual({ mimeType: 'image/png', outputExt: '.png' });
+  });
+
+  it('builds image output path without collision', () => {
+    const out = buildImageOutputPath('C:/media/sample.png', '.png');
+    expect(out).toContain('sample_gemini_removed.png');
   });
 });

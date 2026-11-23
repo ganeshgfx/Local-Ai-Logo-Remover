@@ -1,4 +1,4 @@
-import { processVideoFile } from './processingPipeline';
+import { processMediaFile, isImageFile, isSupportedMediaFile } from './processingPipeline';
 import type { JobRecord, BatchState, GPUMode } from '../shared/types';
 
 type BatchListener = (state: BatchState) => void;
@@ -44,7 +44,9 @@ class BatchOrchestrator {
         .map(j => j.filePath)
     );
 
-    const uniquePaths = Array.from(new Set(filePaths)).filter(p => !activePaths.has(p));
+    const uniquePaths = Array.from(new Set(filePaths)).filter(
+      p => !activePaths.has(p) && isSupportedMediaFile(p)
+    );
     if (uniquePaths.length === 0) return;
 
     const newJobs: JobRecord[] = uniquePaths.map(p => ({
@@ -56,6 +58,7 @@ class BatchOrchestrator {
       progress: 0,
       framesCurrent: 0,
       framesTotal: 0,
+      mediaType: isImageFile(p) ? 'image' : 'video',
     }));
     this.jobs.push(...newJobs);
     this.notify();
@@ -113,7 +116,7 @@ class BatchOrchestrator {
 
     try {
       nextJob.startedAt = Date.now();
-      const result = await processVideoFile(nextJob.filePath, nextJob.id, {
+      const result = await processMediaFile(nextJob.filePath, nextJob.id, {
         gpuMode: this.gpuMode,
         onProgress: update => this.updateJob(nextJob.id, update),
         signal: ctrl.signal,

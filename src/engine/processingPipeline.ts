@@ -6,8 +6,50 @@ import {
   detectGeminiVideoWatermark,
   removeGeminiVideoWatermark,
 } from '../vendor/video/videoExport.js';
+import { WatermarkEngine } from '../vendor/core/watermarkEngine.js';
 import nodePath from 'node:path';
 import nodeFs from 'node:fs';
+
+export const SUPPORTED_VIDEO_EXTENSIONS = ['.mp4', '.mov', '.webm', '.mkv', '.avi', '.m4v'] as const;
+export const SUPPORTED_IMAGE_EXTENSIONS = ['.png', '.jpg', '.jpeg', '.webp', '.bmp'] as const;
+
+const VIDEO_EXT_SET = new Set<string>(SUPPORTED_VIDEO_EXTENSIONS);
+const IMAGE_EXT_SET = new Set<string>(SUPPORTED_IMAGE_EXTENSIONS);
+
+export function isImageFile(filePath: string): boolean {
+  if (!filePath || typeof filePath !== 'string') return false;
+  const match = filePath.match(/\.([a-zA-Z0-9]+)$/);
+  if (!match) return false;
+  return IMAGE_EXT_SET.has(`.${match[1].toLowerCase()}`);
+}
+
+export function isVideoFile(filePath: string): boolean {
+  if (!filePath || typeof filePath !== 'string') return false;
+  const match = filePath.match(/\.([a-zA-Z0-9]+)$/);
+  if (!match) return false;
+  return VIDEO_EXT_SET.has(`.${match[1].toLowerCase()}`);
+}
+
+export function isSupportedMediaFile(filePath: string): boolean {
+  return isImageFile(filePath) || isVideoFile(filePath);
+}
+
+export function getImageMimeInfo(filePath: string): { mimeType: string; outputExt: string } {
+  const match = filePath ? filePath.match(/\.([a-zA-Z0-9]+)$/) : null;
+  const ext = match ? `.${match[1].toLowerCase()}` : '.png';
+  switch (ext) {
+    case '.jpg':
+    case '.jpeg':
+      return { mimeType: 'image/jpeg', outputExt: ext };
+    case '.webp':
+      return { mimeType: 'image/webp', outputExt: '.webp' };
+    case '.bmp':
+      return { mimeType: 'image/png', outputExt: '.png' };
+    case '.png':
+    default:
+      return { mimeType: 'image/png', outputExt: '.png' };
+  }
+}
 
 export type ProgressCallback = (update: Partial<JobRecord>) => void;
 
@@ -121,7 +163,7 @@ export async function processVideoFile(
   return { outputPath, skipped: false };
 }
 
-function buildOutputPath(inputPath: string): string {
+export function buildOutputPath(inputPath: string): string {
   const dir = nodePath.dirname(inputPath);
   const ext = nodePath.extname(inputPath);
   const base = nodePath.basename(inputPath, ext);
@@ -132,4 +174,146 @@ function buildOutputPath(inputPath: string): string {
     counter++;
   }
   return candidate;
+}
+
+export function buildImageOutputPath(inputPath: string, outputExt?: string): string {
+  const dir = nodePath.dirname(inputPath);
+  const ext = nodePath.extname(inputPath);
+  const base = nodePath.basename(inputPath, ext);
+  const targetExt = outputExt || ext || '.png';
+  let candidate = nodePath.join(dir, `${base}_gemini_removed${targetExt}`);
+  let counter = 1;
+  while (nodeFs.existsSync(candidate)) {
+    candidate = nodePath.join(dir, `${base}_gemini_removed_${counter}${targetExt}`);
+    counter++;
+  }
+  return candidate;
+}
+
+export async function exportCanvasToBlob(canvas: any, mimeType: string): Promise<Blob> {
+  const tryExport = async (type: string) => {
+    if (typeof canvas?.convertToBlob === 'function') {
+      return await canvas.convertToBlob({ type, quality: 0.95 });
+    }
+    if (typeof canvas?.toBlob === 'function') {
+      return await new Promise<Blob>((resolve, reject) => {
+        canvas.toBlob((blob: Blob | null) => {
+          if (blob) resolve(blob);
+          else reject(new Error('Failed to encode image blob'));
+        }, type, 0.95);
+      });
+    }
+    throw new Error('Canvas blob export API is unavailable');
+  };
+
+  try {
+    return await tryExport(mimeType);
+  } catch (err) {
+    if (mimeType !== 'image/png') {
+      return await tryExport('image/png');
+    }
+    throw err;
+  }
+}
+
+async function loadImageSource(blob: Blob): Promise<{ source: any; cleanup: () => void }> {
+  if (typeof createImageBitmap === 'function') {
+    const bitmap = await createImageBitmap(blob);
+    return {
+      source: bitmap,
+      cleanup: () => {
+        try {
+          bitmap.close();
+        } catch {}
+      },
+    };
+  }
+  if (typeof Image !== 'undefined') {
+    const url = URL.createObjectURL(blob);
+    const img = new Image();
+    await new Promise<void>((resolve, reject) => {
+      img.onload = () => resolve();
+      img.onerror = () => reject(new Error('Failed to load image file'));
+      img.src = url;
+    });
+    return {
+      source: img,
+      cleanup: () => {
+        URL.revokeObjectURL(url);
+      },
+    };
+  }
+  throw new Error('Image decoding runtime is unavailable');
+}
+
+export async function processImageFile(
+  filePath: string,
+  jobId: string,
+  options: PipelineOptions
+): Promise<{ outputPath: string; skipped: boolean }> {
+  const { gpuMode, onProgress, signal } = options;
+
+  onProgress({ id: jobId, stage: 'initializing', progress: 5, mediaType: 'image' });
+
+  const provider = await initEngine(gpuMode);
+  onProgress({ id: jobId, gpuBackend: provider, progress: 15 });
+
+  if (signal.aborted) throw new DOMException('Cancelled', 'AbortError');
+
+  const fileBuffer = nodeFs.readFileSync(filePath);
+  const fileSize = fileBuffer.byteLength;
+  onProgress({ id: jobId, fileSizeBytes: fileSize, stage: 'detecting', progress: 25 });
+
+  if (signal.aborted) throw new DOMException('Cancelled', 'AbortError');
+
+  const mimeInfo = getImageMimeInfo(filePath);
+  const blob = new Blob([fileBuffer], { type: mimeInfo.mimeType });
+  const { source, cleanup } = await loadImageSource(blob);
+
+  if (signal.aborted) {
+    cleanup();
+    throw new DOMException('Cancelled', 'AbortError');
+  }
+
+  onProgress({ id: jobId, stage: 'removing', progress: 50 });
+
+  let processedCanvas: any;
+  try {
+    const engine = await WatermarkEngine.create();
+    processedCanvas = await engine.removeWatermarkFromImage(source, {
+      adaptiveMode: true,
+    });
+  } finally {
+    cleanup();
+  }
+
+  if (signal.aborted) throw new DOMException('Cancelled', 'AbortError');
+
+  const meta = processedCanvas?.__watermarkMeta;
+  const isApplied = Boolean(meta?.applied);
+  if (!isApplied) {
+    onProgress({ id: jobId, stage: 'skipped', progress: 100 });
+    return { outputPath: '', skipped: true };
+  }
+
+  onProgress({ id: jobId, stage: 'exporting', progress: 85 });
+
+  const outputPath = buildImageOutputPath(filePath, mimeInfo.outputExt);
+  const outputBlob = await exportCanvasToBlob(processedCanvas, mimeInfo.mimeType);
+  const arrayBuffer = await outputBlob.arrayBuffer();
+  nodeFs.writeFileSync(outputPath, Buffer.from(arrayBuffer));
+
+  onProgress({ id: jobId, stage: 'completed', progress: 100, outputPath });
+  return { outputPath, skipped: false };
+}
+
+export async function processMediaFile(
+  filePath: string,
+  jobId: string,
+  options: PipelineOptions
+): Promise<{ outputPath: string; skipped: boolean }> {
+  if (isImageFile(filePath)) {
+    return processImageFile(filePath, jobId, options);
+  }
+  return processVideoFile(filePath, jobId, options);
 }

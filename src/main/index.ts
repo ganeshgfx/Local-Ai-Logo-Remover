@@ -209,10 +209,12 @@ if (!gotLock) {
     ipcMain.handle('select-files', async () => {
       if (!mainWindow) return [];
       const res = await dialog.showOpenDialog(mainWindow, {
-        title: 'Select Videos to Remove Watermark',
+        title: 'Select Videos or Images to Remove Watermark',
         properties: ['openFile', 'multiSelections'],
         filters: [
-          { name: 'Video Files', extensions: ['mp4', 'mov', 'webm', 'mkv', 'avi'] },
+          { name: 'Media Files (Videos & Images)', extensions: ['mp4', 'mov', 'webm', 'mkv', 'avi', 'm4v', 'png', 'jpg', 'jpeg', 'webp', 'bmp'] },
+          { name: 'Video Files', extensions: ['mp4', 'mov', 'webm', 'mkv', 'avi', 'm4v'] },
+          { name: 'Image Files', extensions: ['png', 'jpg', 'jpeg', 'webp', 'bmp'] },
           { name: 'All Files', extensions: ['*'] },
         ],
       });

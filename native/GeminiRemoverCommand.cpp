@@ -6,10 +6,11 @@
 #include <sstream>
 
 static const wchar_t* SUPPORTED_EXT[] = {
-    L".mp4", L".mov", L".webm", L".m4v", nullptr
+    L".mp4", L".mov", L".webm", L".m4v", L".mkv", L".avi",
+    L".png", L".jpg", L".jpeg", L".webp", L".bmp", nullptr
 };
 
-static bool IsSupportedVideoFile(const std::wstring& path) {
+static bool IsSupportedMediaFile(const std::wstring& path) {
     size_t dotPos = path.find_last_of(L'.');
     if (dotPos == std::wstring::npos) return false;
     std::wstring ext = path.substr(dotPos);
@@ -44,7 +45,7 @@ IFACEMETHODIMP GeminiRemoverCommand::GetIcon(IShellItemArray*, LPWSTR* ppszIcon)
 }
 
 IFACEMETHODIMP GeminiRemoverCommand::GetToolTip(IShellItemArray*, LPWSTR* ppszInfotip) {
-    return SHStrDupW(L"Remove watermark from selected video(s)", ppszInfotip);
+    return SHStrDupW(L"Remove watermark from selected video or image(s)", ppszInfotip);
 }
 
 IFACEMETHODIMP GeminiRemoverCommand::GetCanonicalName(GUID* pguidCommandName) {
@@ -61,19 +62,19 @@ IFACEMETHODIMP GeminiRemoverCommand::GetState(
     psia->GetCount(&count);
     if (count == 0) { *pCmdState = ECS_HIDDEN; return S_OK; }
     
-    bool hasVideo = false;
-    for (DWORD i = 0; i < count && !hasVideo; ++i) {
+    bool hasMedia = false;
+    for (DWORD i = 0; i < count && !hasMedia; ++i) {
         Microsoft::WRL::ComPtr<IShellItem> item;
         if (SUCCEEDED(psia->GetItemAt(i, &item))) {
             LPWSTR pszPath = nullptr;
             if (SUCCEEDED(item->GetDisplayName(SIGDN_FILESYSPATH, &pszPath))) {
-                hasVideo = IsSupportedVideoFile(pszPath);
+                hasMedia = IsSupportedMediaFile(pszPath);
                 CoTaskMemFree(pszPath);
             }
         }
     }
     
-    *pCmdState = hasVideo ? ECS_ENABLED : ECS_HIDDEN;
+    *pCmdState = hasMedia ? ECS_ENABLED : ECS_HIDDEN;
     return S_OK;
 }
 
@@ -149,7 +150,7 @@ std::vector<std::wstring> GeminiRemoverCommand::CollectFilePaths(IShellItemArray
             if (SUCCEEDED(item->GetDisplayName(SIGDN_FILESYSPATH, &pszPath))) {
                 std::wstring path(pszPath);
                 CoTaskMemFree(pszPath);
-                if (IsSupportedVideoFile(path)) result.push_back(path);
+                if (IsSupportedMediaFile(path)) result.push_back(path);
             }
         }
     }

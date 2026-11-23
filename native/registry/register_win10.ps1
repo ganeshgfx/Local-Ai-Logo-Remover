@@ -31,17 +31,23 @@ $iconVal = "`"$AppPath`",0"
 # MultiSelectModel=Player: Explorer calls once per file; single-instance lock batches them
 $commandVal = "`"$AppPath`" `"%1`""
 
-$videoTargets = @(
+$mediaTargets = @(
     "SystemFileAssociations\video",
+    "SystemFileAssociations\image",
     "SystemFileAssociations\.mp4",
     "SystemFileAssociations\.mov",
     "SystemFileAssociations\.webm",
     "SystemFileAssociations\.m4v",
     "SystemFileAssociations\.mkv",
-    "SystemFileAssociations\.avi"
+    "SystemFileAssociations\.avi",
+    "SystemFileAssociations\.png",
+    "SystemFileAssociations\.jpg",
+    "SystemFileAssociations\.jpeg",
+    "SystemFileAssociations\.webp",
+    "SystemFileAssociations\.bmp"
 )
 
-foreach ($target in $videoTargets) {
+foreach ($target in $mediaTargets) {
     # Clean up legacy GeminiRemover key if present
     $legacyKey = "HKCU:\Software\Classes\$target\shell\GeminiRemover"
     if (Test-Path $legacyKey) {

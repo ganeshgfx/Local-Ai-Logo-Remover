@@ -9,6 +9,7 @@ import { AboutModal } from './components/AboutModal';
 import {
   Sparkles,
   Film,
+  Image as ImageIcon,
   Check,
   Loader2,
   X,
@@ -72,7 +73,11 @@ function JobCardDetailed({ job }: { job: JobRecord }) {
       <div className="flex items-center justify-between gap-4 mb-3.5">
         <div className="flex items-center gap-3.5 min-w-0 flex-1">
           <div className="h-11 w-11 rounded-xl bg-zinc-900 border border-zinc-800 flex items-center justify-center flex-shrink-0 text-zinc-200">
-            <Film className="w-5 h-5 text-zinc-300" />
+            {job.mediaType === 'image' ? (
+              <ImageIcon className="w-5 h-5 text-zinc-300" />
+            ) : (
+              <Film className="w-5 h-5 text-zinc-300" />
+            )}
           </div>
           <div className="min-w-0 flex-1">
             <div className="flex items-center gap-2.5">
@@ -163,7 +168,13 @@ function JobCardDetailed({ job }: { job: JobRecord }) {
                 ? `Frame ${job.framesCurrent} / ${job.framesTotal} (${Math.round(job.progress)}%)`
                 : `${Math.round(job.progress)}% completed`}
             </span>
-            <span>{job.stage === 'exporting' ? 'Finalizing video output...' : ''}</span>
+            <span>
+              {job.stage === 'exporting'
+                ? job.mediaType === 'image'
+                  ? 'Saving image output...'
+                  : 'Finalizing video output...'
+                : ''}
+            </span>
           </div>
         </div>
       )}
@@ -220,7 +231,11 @@ function JobRowCompact({ job }: { job: JobRecord }) {
   return (
     <div className="flex items-center justify-between gap-3 px-4 py-2.5 border border-zinc-800/80 bg-zinc-950/60 hover:bg-zinc-900/40 rounded-lg mb-2 transition-colors">
       <div className="flex items-center gap-3 min-w-0 flex-1">
-        <Film className="w-4 h-4 text-zinc-400 flex-shrink-0" />
+        {job.mediaType === 'image' ? (
+          <ImageIcon className="w-4 h-4 text-zinc-400 flex-shrink-0" />
+        ) : (
+          <Film className="w-4 h-4 text-zinc-400 flex-shrink-0" />
+        )}
         <span className="text-xs font-medium text-zinc-200 truncate max-w-sm">
           {job.fileName}
         </span>
@@ -360,10 +375,19 @@ export default function App() {
     const files = e.dataTransfer.files;
     if (files && files.length > 0) {
       const paths: string[] = [];
+      const api = (window as any).electronAPI;
       for (let i = 0; i < files.length; i++) {
         const file = files[i];
-        const path = (file as any).path;
-        if (path) paths.push(path);
+        let p = '';
+        if (api?.getPathForFile) {
+          try {
+            p = api.getPathForFile(file);
+          } catch {}
+        }
+        if (!p) {
+          p = (file as any).path || '';
+        }
+        if (p) paths.push(p);
       }
       if (paths.length > 0) {
         batchOrchestrator.addFiles(paths, 'preferred');
@@ -389,7 +413,7 @@ export default function App() {
       {isDragging && (
         <div className="absolute inset-0 z-50 bg-black/85 backdrop-blur-md border-2 border-dashed border-zinc-300 flex flex-col items-center justify-center pointer-events-none transition-all">
           <UploadCloud className="w-16 h-16 text-zinc-100 mb-4 animate-bounce" />
-          <p className="text-base font-semibold text-zinc-100">Drop videos here to remove watermark</p>
+          <p className="text-base font-semibold text-zinc-100">Drop videos or images here to remove watermark</p>
           <p className="text-xs text-zinc-400 mt-1">Runs 100% locally with GPU acceleration</p>
         </div>
       )}
@@ -461,7 +485,7 @@ export default function App() {
             <Info className="w-4 h-4" />
           </Button>
 
-          {/* Add Videos Button */}
+          {/* Add Media Button */}
           <Button
             variant="default"
             size="default"
@@ -469,7 +493,7 @@ export default function App() {
             className="gap-2 text-xs font-semibold shadow-sm"
           >
             <Plus className="w-4 h-4" />
-            <span>Add Videos</span>
+            <span>Add Media</span>
           </Button>
         </div>
       </header>
@@ -546,14 +570,14 @@ export default function App() {
               <FileVideo className="w-8 h-8" />
             </div>
             <h3 className="text-base font-semibold text-zinc-100 mb-1.5">
-              Select or drop video files here
+              Select or drop videos or images here
             </h3>
             <p className="text-xs text-zinc-400 max-w-md mb-6 leading-relaxed">
-              Right-click any video in Windows Explorer &rarr; <span className="text-zinc-200 font-medium">Remove Watermark</span>, or click here to select files.
+              Right-click any video or image in Windows Explorer &rarr; <span className="text-zinc-200 font-medium">Remove Watermark</span>, or click here to select files.
             </p>
             <Button variant="secondary" size="lg" className="gap-2 text-xs font-semibold pointer-events-none">
               <Plus className="w-4 h-4" />
-              <span>Browse Video Files</span>
+              <span>Browse Media Files</span>
             </Button>
           </div>
         ) : (
@@ -572,7 +596,7 @@ export default function App() {
               className="mt-4 border border-dashed border-zinc-800/80 hover:border-zinc-700 bg-zinc-950/30 hover:bg-zinc-900/30 transition-all duration-200 rounded-xl p-4 flex items-center justify-center gap-2.5 text-xs text-zinc-400 hover:text-zinc-200 cursor-pointer"
             >
               <Plus className="w-4 h-4 text-zinc-500" />
-              <span>Click or drop more videos to queue</span>
+              <span>Click or drop more videos or images to queue</span>
             </div>
           </div>
         )}
@@ -585,7 +609,7 @@ export default function App() {
             {batch.isRunning ? (
               <span className="flex items-center gap-2 text-zinc-200 font-medium">
                 <Loader2 className="w-3.5 h-3.5 animate-spin" />
-                Processing video batch queue...
+                Processing batch queue...
               </span>
             ) : (
               <span>All queue tasks completed</span>

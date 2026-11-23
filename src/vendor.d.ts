@@ -21,6 +21,16 @@ declare module '*/vendor/video/videoWatermarkDetector.js' {
   export function scoreVideoWatermarkFrame(imageData: any, position: any, alphaMap: any): any;
 }
 
+declare module '*/vendor/core/watermarkEngine.js' {
+  export class WatermarkEngine {
+    static create(): Promise<WatermarkEngine>;
+    getAlphaMap(size: number | string): Promise<Float32Array>;
+    removeWatermarkFromImage(image: any, options?: any): Promise<any>;
+    getWatermarkInfo(imageWidth: number, imageHeight: number): any;
+  }
+  export function removeRepeatedWatermarkLayers(...args: any[]): any;
+}
+
 // WebGPU global type declarations
 declare interface GPUDevice {
   createShaderModule(descriptor: any): any;

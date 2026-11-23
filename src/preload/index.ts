@@ -1,6 +1,13 @@
-import { contextBridge, ipcRenderer } from 'electron';
+import { contextBridge, ipcRenderer, webUtils } from 'electron';
 
 const electronAPI = {
+  getPathForFile: (file: File) => {
+    try {
+      return webUtils.getPathForFile(file);
+    } catch {
+      return (file as any).path || '';
+    }
+  },
   getInitialFiles: () => ipcRenderer.invoke('get-initial-files'),
   selectFiles: () => ipcRenderer.invoke('select-files'),
   showInFolder: (path: string) => ipcRenderer.invoke('show-in-folder', path),

@@ -72,11 +72,45 @@ ai-watermark-remover/
 
 ---
 
+## Installation
+
+### System Requirements
+- **OS**: Windows 10 or Windows 11 (64-bit)
+- **Hardware**: GPU supporting WebGPU / DirectX 12 recommended for fast inference. Automatic fallback to multi-threaded CPU WASM SIMD if no supported GPU detected.
+- **Offline**: Fully self-contained; no internet required after install.
+
+### Method 1: Windows Installer (Recommended)
+1. Download the latest installer (`AI.Watermark.Remover.Setup.x.x.x.exe`) from [GitHub Releases](https://github.com/ganeshgfx/Local-Ai-Logo-Remover/releases).
+2. Run the executable to install the application.
+3. Launch from the Start menu or use the right-click context menu integration.
+
+### Method 2: Chocolatey
+Install via Chocolatey package manager:
+```powershell
+choco install ai-watermark-remover
+```
+
+### Method 3: Install from Source (Development)
+Prerequisites: [Node.js](https://nodejs.org/) (v18 or v20+) and [Git](https://git-scm.com/).
+
+```bash
+# 1. Clone repository
+git clone https://github.com/ganeshgfx/Local-Ai-Logo-Remover.git
+cd Local-Ai-Logo-Remover
+
+# 2. Install dependencies
+npm install
+
+# 3. Start development server
+npm run dev
+```
+
+---
+
 ## Build & Testing Instructions
 
 ### 1. Install Dependencies
 ```bash
-cd ai-watermark-remover
 npm install
 ```
 
